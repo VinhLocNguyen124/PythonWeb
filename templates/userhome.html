@@ -1,0 +1,69 @@
+{% extends "userbase.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron text-center">
+        <h1 class="display-3">Welcome {{ user.first_name }} {{ user.last_name }}</h1>
+    </div>
+    &nbsp;
+    {% if projects %}
+    <div class="jumbotron">
+        <h3>Projects List</h3>
+        <table class="table table-striped table-bordered table-hover">
+            <tbody>
+                {% for project in projects %}
+                &nbsp;
+                <div class="card">
+                    {% set count = 0 %}
+                    {% if project.uncom_task == 0 %}
+                    <div class="card-header">
+                        <h5 style="color: #0066ff;">Project <strong>{{ project.pr_name }}</strong> chưa có công việc mới</h5> 
+                    </div>
+                    {% else %}
+                    <div class="card-header">
+                        <h5 style="color:Tomato;">Project <strong>{{ project.pr_name }}</strong> còn  <strong><mark>{{ project.uncom_task }}</mark></strong> công việc chưa hoàn thành</h5>
+                    </div>
+                    {% endif %}
+                   
+                    <div class="card-body">
+                        <h5 class="card-title">{{ project.pr_name }}</h5>
+                        <p class="card-text">Đây là mô tả của project</p>
+                        
+                        <div class="row">
+                            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                <form action="/listTask" method="post">
+                                    <input type="hidden" name="hiddenProjectId" value="{{ project.project_id }}" />
+                                    <button type="submit" class="btn btn-success" style="width: 200px;">Xem chi tiết</button>
+                                </form>
+                            </div>
+                            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                <form action="/editProject" method="post">
+                                    <input type="hidden" name="hiddenProjectId" value="{{ project.project_id }}" />
+                                    <button type="submit" class="btn btn-info" style="width: 200px;">Chỉnh sửa Project</button>
+                                </form>
+                            </div>
+                            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                <form action="/deleteProject" method="post">
+                                    <input type="hidden" name="hiddenProjectId" value="{{ project.project_id }}" />
+                                    <button type="submit" class="btn btn-danger" style="width: 200px;">Xóa Project</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+                &nbsp;
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        <h4>You dont have task in list</h4>
+    </div>
+    <p class="lead"></p>
+    <p><a class="btn btn-lg btn-success" href="/newTask">New Task</a></p>
+    {% endif %}
+</div>
+{% endblock %}

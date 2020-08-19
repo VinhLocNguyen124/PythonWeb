@@ -1,0 +1,69 @@
+from main import db
+from sqlalchemy import Sequence
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class User(db.Model):
+    user_id=db.Column(db.Integer, Sequence('user_id_seq'), primary_key=True)
+    first_name=db.Column(db.String(64), index=True, nullable=False)
+    last_name=db.Column(db.String(64), index=True, nullable=False)
+    email=db.Column(db.String(120), index=True, unique=True, nullable=False)
+    password_hash=db.Column(db.String(120), nullable=False)
+
+    projects = db.relationship('Project', back_populates='user')
+
+    def __repr__(self):
+        return '<User full name: {} {} email: {}>'.format(self.first_name, self.last_name, self.email)
+   
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class Project(db.Model):
+    project_id = db.Column(db.Integer, Sequence('project_id_seq'), primary_key=True)
+    pr_name = db.Column(db.String(50), nullable=False)
+    uncom_task = db.Column(db.Integer, default = 0)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    user = db.relationship('User', back_populates='projects')
+
+    tasks = db.relationship('Task', back_populates='project')
+
+    def __repe__(self):
+        return '<Project: {}>'.format(self.pr_name)
+
+class Task(db.Model):
+    task_id = db.Column(db.Integer, Sequence('task_id_seq'), primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+    isCompleted = db.Column(db.Boolean, default = False)
+    
+    project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'))
+    project = db.relationship('Project', back_populates='tasks')
+
+    priority_id = db.Column(db.Integer, db.ForeignKey('priority.priority_id'))
+    priority = db.relationship('Priority', back_populates='tasks')
+
+    def __repe__(self):
+        return '<Task: {} of user {}>'.format(self.description, self.user_id)
+
+    def getPriorityClasses(self):
+        if(self.priority_id == 1):
+            return "table-danger"
+        elif(self.priority_id == 2):
+            return "table-warning"
+        elif(self.priority_id == 3):
+            return "table-info"
+        else:
+            return "table-primary"
+
+class Priority(db.Model):
+    priority_id = db.Column(db.Integer, Sequence('priority_id_seq'), primary_key=True)
+    text = db.Column(db.String(50), nullable=False)
+
+    tasks = db.relationship('Task', back_populates='priority')
+
+    def __repe__(self):
+        return '<Priority: {} with {}>'.format(self.priority_id, self.text)
+
+
+

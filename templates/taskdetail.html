@@ -1,0 +1,60 @@
+{% extends "userbase.html" %}
+
+{% block content %}
+<div class="container">
+    <tr class="text-left">
+        <a class="btn btn-info" href="/userHome">Back to Projects List</a>
+    </tr>
+    <div class="jumbotron text-center">
+        <h1 class="display-3">Welcome {{ user.first_name }} {{ user.last_name }}</h1>
+
+    </div>
+
+    {% if tasks %}
+    <div class="jumbotron">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr class="{{ task.getPriorityClasses() }}">
+                    <td>{{ task.description }}</td>
+                    <td class="text-center">
+                        <form action="/doneTask" method="post">
+                            <input type="hidden" name="hiddenTaskId" value="{{ task.task_id }}" />
+                            <button type="submit" class="btn btn-success"  style="width: 100px;">Done</button>
+                        </form>
+                    </td>
+                    <td class="text-center">
+                        <form action="/editTask" method="post">
+                            <input type="hidden" name="hiddenTaskId" value="{{ task.task_id }}" />
+                            <button type="submit" class="btn btn-info" style="width: 100px;">Edit</button>
+                        </form>
+                    </td>
+                    <td class="text-center">
+                        <form action="/deleteTask" method="post">
+                            <input type="hidden" name="hiddenTaskId" value="{{ task.task_id }}" />
+                            <button type="submit" class="btn btn-danger" style="width: 100px;">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="text-center">
+                    <a class="btn btn-danger" href="/newTask">New Task</a>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        <h4>You dont have task in list</h4>
+    </div>
+    <p class="lead"></p>
+    <p><a class="btn btn-lg btn-success" href="/newTask">New Task</a></p>
+    {% endif %}
+</div>
+{% endblock %}
